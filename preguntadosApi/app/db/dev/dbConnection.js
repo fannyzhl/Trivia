@@ -23,6 +23,24 @@ const createUserTable = () => {
     });
 };
 
+const createLeaderNormalTable = () => {
+  const leaderNormalQuery = `CREATE TABLE IF NOT EXISTS leader_normal
+  (leaderNormal_id SERIAL PRIMARY KEY, 
+  username VARCHAR(100) NOT NULL,  
+  time VARCHAR(100) NOT NULL)`;
+
+  pool
+    .query(leaderNormalQuery)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
 const dropUserTable = () => {
   const usersDropQuery = "DROP TABLE IF EXISTS users";
 
@@ -38,12 +56,28 @@ const dropUserTable = () => {
     });
 };
 
+const dropLeaderNormalTable = () => {
+  const LeaderNormalQuery = "DROP TABLE IF EXISTS leader_normal";
+  pool
+    .query(LeaderNormalQuery)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
 const createAllTables = () => {
   createUserTable();
+  createLeaderNormalTable();
 };
 
 const dropAllTables = () => {
   dropUserTable();
+  dropLeaderNormalTable();
 };
 pool.on("remove", () => {
   console.log("client removed");
