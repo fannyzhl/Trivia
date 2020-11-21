@@ -27,10 +27,28 @@ const createLeaderNormalTable = () => {
   const leaderNormalQuery = `CREATE TABLE IF NOT EXISTS leader_normal
   (leaderNormal_id SERIAL PRIMARY KEY, 
   username VARCHAR(100) NOT NULL,  
-  time VARCHAR(100) NOT NULL)`;
+  time float NOT NULL)`;
 
   pool
     .query(leaderNormalQuery)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
+const createLeaderRushTable = () => {
+  const leaderRushQuery = `CREATE TABLE IF NOT EXISTS leader_rush
+  (leaderRush_id SERIAL PRIMARY KEY, 
+  username VARCHAR(100) NOT NULL,  
+  questions float NOT NULL)`;
+
+  pool
+    .query(leaderRushQuery)
     .then((res) => {
       console.log(res);
       pool.end();
@@ -70,14 +88,30 @@ const dropLeaderNormalTable = () => {
     });
 };
 
+const dropLeaderRushTable = () => {
+  const LeaderRushQuery = "DROP TABLE IF EXISTS leader_rush";
+  pool
+    .query(LeaderRushQuery)
+    .then((res) => {
+      console.log(res);
+      pool.end();
+    })
+    .catch((err) => {
+      console.log(err);
+      pool.end();
+    });
+};
+
 const createAllTables = () => {
   createUserTable();
   createLeaderNormalTable();
+  createLeaderRushTable();
 };
 
 const dropAllTables = () => {
   dropUserTable();
   dropLeaderNormalTable();
+  dropLeaderRushTable();
 };
 pool.on("remove", () => {
   console.log("client removed");
