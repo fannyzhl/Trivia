@@ -31,10 +31,14 @@ const triviaReducer = (state, action) => {
         rushLeaderboard: action.payload,
         isLoading: false,
       };
-    case "post_normalLeaderboard":
+    case "post_normal":
+      return { ...state, addingLeaderboard: false };
+    case "post_multiplayer":
+      return { ...state, isLoading: false };
+    case "get_game":
       return {
-        normalQuestions: [{ question: "" }],
-        rushQuestions: [{ question: "" }],
+        ...state,
+        multiplayerGame: action.payload,
         isLoading: false,
       };
     default:
@@ -43,8 +47,12 @@ const triviaReducer = (state, action) => {
 };
 
 const getNormalQuestions = (dispatch) => async () => {
-  const response = await triviaApi.get("?amount=10&type=multiple");
-  dispatch({ type: "get_normal_questions", payload: response.data.results });
+  try {
+    const response = await triviaApi.get("?amount=10&type=multiple");
+    dispatch({ type: "get_normal_questions", payload: response.data.results });
+  } catch (error) {
+    console.log(error.response.data, "error");
+  }
 };
 
 const getRushQuestions = (dispatch) => async () => {
@@ -62,7 +70,6 @@ const addToNormalLeaderboard = (dispatch) => async ({
   gameWon,
 }) => {
   try {
-    dispatch({ type: "exit_game" });
     const response = await preguntadosApi.post(
       "/api/v1/leaderboard/addNormal",
       {
@@ -70,7 +77,8 @@ const addToNormalLeaderboard = (dispatch) => async ({
         questions,
       }
     );
-    dispatch({ type: "post_normalLeaderboard" });
+
+    dispatch({ type: "exit_game" });
     navigate("Results", { gameWon, questions });
   } catch (error) {
     console.log(error.response.data, "error");
@@ -87,7 +95,7 @@ const addToRushLeaderboard = (dispatch) => async ({
       username,
       questions,
     });
-    dispatch({ type: "exit_game" });
+    dispatch({ type: "post_normal" });
     navigate("Results", { gameWon, questions });
   } catch (error) {
     console.log(error.response.data, "error");
@@ -97,7 +105,7 @@ const addToRushLeaderboard = (dispatch) => async ({
 const getNormalLeaderboard = (dispatch) => async () => {
   try {
     const response = await preguntadosApi.get("/api/v1/leaderboard/getNormal");
-    console.log(response.data);
+
     dispatch({
       type: "get_normal_leaderboard",
       payload: response.data.data,
@@ -119,6 +127,61 @@ const getRushLeaderboard = (dispatch) => async () => {
   }
 };
 
+const createMulltiplayer = (dispatch) => async ({ game_code }) => {
+  try {
+    const response = await preguntadosApi.post("/api/v1/multiplayer/addGame", {
+      game_code,
+    });
+    dispatch({ type: "post_multiplayer" });
+  } catch (error) {
+    console.log(error.response.data, "error");
+  }
+};
+
+const addPlayerOne = (dispatch) => async ({
+  game_code,
+  player_one,
+  questions_one,
+}) => {
+  try {
+    const response = await preguntadosApi.put(
+      "/api/v1/multiplayer/updateGame",
+      { game_code, player_one, questions_one }
+    );
+    dispatch({ type: "update_multiplayer" });
+  } catch (error) {
+    console.log(error.response.data, "error");
+  }
+};
+
+const addPlayerTwo = (dispatch) => async ({
+  game_code,
+  player_two,
+  questions_two,
+}) => {
+  try {
+    const response = await preguntadosApi.put(
+      "/api/v1/multiplayer/updateGame",
+      { game_code, player_two, questions_two }
+    );
+    dispatch({ type: "update_multiplayer" });
+  } catch (error) {
+    console.log(error.response.data, "error");
+  }
+};
+
+const getGameByUser = (dispatch) => async ({ username }) => {
+  try {
+    const response = await preguntadosApi.get(
+      `/api/v1/multiplayer/getGameByUser/${username}`
+    );
+
+    dispatch({ type: "get_game", payload: response.data.data });
+  } catch (error) {
+    console.log(error.response.data, "error");
+  }
+};
+
 export const { Provider, Context } = createDataContext(
   triviaReducer,
   {
@@ -129,10 +192,15 @@ export const { Provider, Context } = createDataContext(
     getRushQuestions,
     getNormalLeaderboard,
     getRushLeaderboard,
+    createMulltiplayer,
+    addPlayerOne,
+    addPlayerTwo,
+    getGameByUser,
   },
   {
     isLoading: true,
     normalQuestions: [{ question: "" }],
     rushQuestions: [{ question: "" }],
+    addingLeaderboard: true,
   }
 );
