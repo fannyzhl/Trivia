@@ -5,13 +5,13 @@ import { Share } from "react-native";
 import { Context as TriviaContext } from "../context/TriviaContext";
 
 const ResultsScreen = ({ navigation }) => {
+  const {
+    state: { addingLeaderboard },
+  } = useContext(TriviaContext);
   const gameWon = navigation.getParam("gameWon");
   const questions = navigation.getParam("questions");
-  const {
-    state: { isLoading },
-  } = useContext(TriviaContext);
 
-  if (isLoading) {
+  if (addingLeaderboard) {
     return <Spinner color="blue" style={{ alignSelf: "center" }} />;
   }
 
