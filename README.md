@@ -1,18 +1,24 @@
 ### Configurar Front
 
-1. Instalar dependencias
+1. Diríjase a la carpeta preguntadosFront
+
+```sh
+$ cd preguntdaosFront
+```
+
+2. Instalar dependencias
 
 ```sh
 $ npm install
 ```
 
-2. Iniciar front
+3. Iniciar front
 
 ```sh
 $ npm start
 ```
 
-3. Para ver la aplicacion es necesario tener descargado Expo en algun telefono. Se escanea el codigo QR y deberia abrir desde la aplicacion de Expo.
+4. Para ver la aplicacion es necesario tener descargado Expo en algun telefono. Se escanea el codigo QR y deberia abrir desde la aplicacion de Expo.
 
 ### Crear apk
 
